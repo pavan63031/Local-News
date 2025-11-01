@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import api from "../api/axios";
 import { useNavigate } from "react-router-dom";
 import NewsList from "./NewsList";
-import Weather from "./weather";
+import Weather from "./Weather";
 
 const Home = () => {
   const [user, setUser] = useState(null);
