@@ -15,7 +15,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/uploads', express.static('uploads'));
 
 app.use(cors({
-  origin: "http://localhost:5173",
+  origin: ["http://localhost:5173","https://local-news-frontend.onrender.com"],
   credentials: true, 
 }));
 app.use('/auth',authRoutes);
