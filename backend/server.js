@@ -10,9 +10,7 @@ const path = require('path');
 const app = express();
 require("dotenv").config();
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.use('/uploads', express.static('uploads'));
+
 
 app.use(cors({
   origin: ["http://localhost:5173","https://local-news-frontend.onrender.com"],
@@ -23,6 +21,10 @@ app.use('/user',newsRoutes);
 app.use('/category',categoryRoutes);
 app.use('/me',userRoutes);
 app.use('/api/news',globalRoutes);
+
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use('/uploads', express.static('uploads'));
 
 connectDB();
 const PORT = process.env.PORT || 5000;
