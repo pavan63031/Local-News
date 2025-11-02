@@ -15,37 +15,99 @@ const News = require('../models/News');
         }
     }
 
-    exports.addPosts = async (req, res) => {
-  try {
-    const { title, shortdesc, description, author, category, latitude, longitude, place} = req.body;
+  //   exports.addPosts = async (req, res) => {
+  // try {
+  //   const { title, shortdesc, description, author, category, latitude, longitude, place} = req.body;
 
-    if (!req.file) {
-      return res.status(400).json({ message: "Image file is required" });
+  //   if (!req.file) {
+  //     return res.status(400).json({ message: "Image file is required" });
+  //   }
+
+  //    const filePath = req.file ? `/uploads/${req.file.filename}` : null;
+  //   const fileType = req.file ? req.file.mimetype.split("/")[0] : null; 
+  //   const newNews = new News({
+  //     title,
+  //     shortdesc,
+  //     description,
+  //     author, 
+  //     category,
+  //     media: filePath,
+  //     mediaType: fileType,
+  //     location: {
+  //       latitude: parseFloat(latitude),
+  //       longitude: parseFloat(longitude),
+  //       place,
+  //     },  
+  //   });
+
+//     await newNews.save();
+
+//   return res.status(201).json(newNews);
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).json({ message: "Server error while adding news" });
+//   }
+// };
+
+exports.addPosts = async (req, res) => {
+  try {
+    const { title, shortdesc, description, author, category, latitude, longitude, place } = req.body;
+
+    let filePath = null;
+    let fileType = null;
+
+    // If a file was uploaded, get its Cloudinary URL
+    if (req.file) {
+      console.log("Uploaded file info:", req.file); // Debug
+      filePath = req.file.path || req.file.url;
+      fileType = req.file.mimetype ? req.file.mimetype.split("/")[0] : null;
     }
 
-     const filePath = req.file ? `/uploads/${req.file.filename}` : null;
-    const fileType = req.file ? req.file.mimetype.split("/")[0] : null; 
     const newNews = new News({
       title,
       shortdesc,
       description,
-      author, 
+      author,
       category,
       media: filePath,
       mediaType: fileType,
       location: {
-        latitude: parseFloat(latitude),
-        longitude: parseFloat(longitude),
+        latitude: latitude ? parseFloat(latitude) : undefined,
+        longitude: longitude ? parseFloat(longitude) : undefined,
         place,
-      },  
+      },
     });
 
     await newNews.save();
+    return res.status(201).json(newNews);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Server error while adding news" });
+  }
+};
 
-  return res.status(201).json(newNews);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Server error while adding news" });
+// UPDATE a post
+exports.updatePost = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const updateData = req.body;
+
+    if (req.file) {
+      const filePath = req.file.path || req.file.url;
+      const fileType = req.file.mimetype ? req.file.mimetype.split("/")[0] : null;
+      updateData.media = filePath;
+      updateData.mediaType = fileType;
+    }
+
+    const updatedNews = await News.findByIdAndUpdate(id, updateData, { new: true });
+    if (!updatedNews) {
+      return res.status(404).json({ message: "News not found" });
+    }
+
+    res.status(200).json(updatedNews);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error updating news" });
   }
 };
 
@@ -92,41 +154,41 @@ const News = require('../models/News');
     }
     }
 
-    exports.updatePost = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const { title, shortdesc, description, category, place } = req.body;
+//     exports.updatePost = async (req, res) => {
+//   try {
+//     const { id } = req.params;
+//     const { title, shortdesc, description, category, place } = req.body;
 
-    const updateData = {
-      title,
-      shortdesc,
-      description,
-      category,
-    };
+//     const updateData = {
+//       title,
+//       shortdesc,
+//       description,
+//       category,
+//     };
 
-    if (place) {
-      updateData["location.place"] = place;
-    }
-    if (req.file) {
-      const filePath = `/uploads/${req.file.filename}`;
-      const fileType = req.file.mimetype.split("/")[0]; 
+//     if (place) {
+//       updateData["location.place"] = place;
+//     }
+//     if (req.file) {
+//       const filePath = `/uploads/${req.file.filename}`;
+//       const fileType = req.file.mimetype.split("/")[0]; 
 
-      updateData.media = filePath;
-      updateData.mediaType = fileType;
-    }
+//       updateData.media = filePath;
+//       updateData.mediaType = fileType;
+//     }
 
-    const updatedNews = await News.findByIdAndUpdate(id, updateData, { new: true });
+//     const updatedNews = await News.findByIdAndUpdate(id, updateData, { new: true });
 
-    if (!updatedNews) {
-      return res.status(404).json({ message: "News not found" });
-    }
+//     if (!updatedNews) {
+//       return res.status(404).json({ message: "News not found" });
+//     }
 
-    res.json({ message: "News updated successfully", news: updatedNews });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Server error while updating news" });
-  }
-};
+//     res.json({ message: "News updated successfully", news: updatedNews });
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).json({ message: "Server error while updating news" });
+//   }
+// };
 
 
     exports.likeNews = async (req,res) => {
