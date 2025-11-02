@@ -62,7 +62,8 @@ exports.addPosts = async (req, res) => {
       filePath = req.file.path || req.file.url;
       fileType = req.file.mimetype ? req.file.mimetype.split("/")[0] : null;
     }
-
+    console.log("Incoming body:", req.body);
+console.log("Incoming file:", req.file);
     const newNews = new News({
       title,
       shortdesc,
